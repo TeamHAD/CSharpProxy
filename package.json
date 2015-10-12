@@ -1,0 +1,15 @@
+{
+  "name": "CsharpProxy",
+  "version": "1.0.0",
+  "description": "A web service to simulate HTTP API calls to a C# service",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.13.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
