@@ -1,5 +1,20 @@
-var express = require('express');
+var ADAM_DO_COUNT = 6;
+var ADAM_VALUE_MIN = 0;
+var ADAM_VALUE_MAX = 1;
+var adam = [];
+for (var i = 0; i < ADAM_DO_COUNT; i++) {
+  adam.push({
+    DO: {
+      ID: i,
+      VALUE: 0
+    }
+  })
+}
+
+var express = require('express'),
+  xml = require('object-to-xml');
 var app = express();
+var bodyParser = require('body-parser');
 
 var server = app.listen(3000, function() {
   var host = server.address().address;
@@ -7,25 +22,13 @@ var server = app.listen(3000, function() {
   console.log("Express listening at http://%s:%s", host, port);
 });
 
-var devices = {
-  '032f8787b5f3752b6b6d300b9ef15dbf': {
-    'description': 'Front door lock',
-    'address': '10.0.0.20',
-    'port': '8000',
-    'status': 'unlocked'
-  },
-  '981e65d74c75aeb439b25fb89f6360b2': {
-    'description': 'Tempature sensor',
-    'address': '10.0.0.30',
-    'port': '8080',
-    'status': '72°'
-  },
-  '385ebf17900519fd9f4fe35767de3dd8': {
-    'description': 'Front door open sensor',
-    'address': '10.0.0.3',
-    'port': '443',
-    'status': 'open'
-  },
+var device = {
+  '?xml version=\"1.0\" encoding=\"iso-8859-1\"?' : null,
+  'ADAM-6066' : {
+    '@' : {
+      status: 'OK'
+    }
+  }
 };
 
 // To allow CORS, HTTP requests from other domains.
@@ -35,23 +38,51 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.get('/', function(req, res) {
   res.status(200);
   res.end();
 });
 
-app.get('/getDevices', function(req, res) {
-  res.status(200);
-  res.json(devices);
+app.get('/digitaloutput/:id/value', function(req, res) {
+  console.log("Request for digital output channel: " + req.params.id);
+  console.log(adam);
+  var dout = req.params.id;
+  if (Math.abs(dout) < adam.length) {
+    res.status(200);
+    res.set('Content-Type', 'text/xml');
+    res.send(xml(adam[dout]));
+  } else {
+    res.status(501);
+    res.end();
+  }
+
 });
 
-app.get('/getDevice/:id', function(req, res) {
-  var dev = devices[req.params.id];
-  if (dev) {
+app.get('/digitalinput/:id/:value', function(req, res) {
+  console.log("Request for digital input channel: " + req.params.id + " value: " + req.params.value);
+  console.log(adam);
+  var din = req.params.id, val = req.params.value;
+  if (Math.abs(din) < adam.length && val >= ADAM_VALUE_MIN && val <= ADAM_VALUE_MAX) {
     res.status(200);
-    res.json(dev);
+    res.send(xml(device));
   } else {
-    res.status(400);
-    res.json("Device not found.");
+    res.status(501);
+    res.end();
   }
+
+});
+
+
+
+app.post('/digitaloutput/all/value', function(req, res) {
+  console.log("Request for digital output " + req.body.DO0);
+
+    res.status(200);
+    res.set('Content-Type', 'text/xml');
+
+    res.send(xml(adam));
+
+
 });

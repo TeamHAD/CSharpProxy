@@ -4,9 +4,14 @@
   "description": "A web service to simulate HTTP API calls to a C# service",
   "main": "index.js",
   "dependencies": {
-    "express": "^4.13.3"
+    "body-parser": "^1.14.1",
+    "express": "^4.13.3",
+    "should": "^7.1.1",
+    "supertest": "^1.1.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "^2.3.3"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
