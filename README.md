@@ -1,4 +1,4 @@
-CsharpProxy
+DeviceSimulator
 ===========
 This is a basic web service endpoint to simulate a Advantech ADAM 6066 web service in order to test API calls from a Node.js server.
 
@@ -11,13 +11,13 @@ Express.js - see [http://expressjs.com/starter/installing.html](http://expressjs
 
 Clone the project from Git
 
-    git clone https://github.com/TeamHAD/CSharpProxy.git ./CSharpProxy
-    cd CSharpProxy
+    git clone https://github.com/TeamHAD/DeviceSimulator.git ./DeviceSimulator
+    cd DeviceSimulator
     node index.js
 
 This will start a web server running on port 3000. Access it from your browser at http://localhost:3000.
 
-The service contains information about three hypothetical devices. You can get a specific device's channel info by querying for its id
+The service simulates calls to a networked ADAM 6066 device's web server. You can get a specific device's channel info by querying for its id
 http://localhost:3000/digitaloutput/0/value.
 
 Any changes you make to the code require the server to be restarted.
