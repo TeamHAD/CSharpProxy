@@ -74,15 +74,24 @@ app.get('/digitalinput/:id/:value', function(req, res) {
 
 });
 
-
-
+/*
+REQUEST
+The content‐type will be ‘application/x‐www‐form‐urlencoded’. Examples:
+Use the following URI to set the DO value(s). http://10.0.0.1/digitaloutput/all/value
+The coming data with the request will be {name}={value} pair(s). {name} : The name of the channel, for example DO0.
+{value} : The value to be set to the indicated channel.
+For example, if the request is going to set channel 0, 1, 2 to value 1, then the name‐value pairs will look like below: DO0=1&DO1=1&DO2=1
+RESPONSE
+The content-type will be ‘text/xml’
+The content will look like below
+<?xml version="1.0" ?>
+<ADAM‐6250 status=”{status}”>
+</ADAM-6250>
+{status} : The result. If succeed, the result will be ‘OK’; otherwise, the result will be the error message.
+*/
 app.post('/digitaloutput/all/value', function(req, res) {
-  console.log("Request for digital output " + req.body.DO0);
-
-    res.status(200);
-    res.set('Content-Type', 'text/xml');
-
-    res.send(xml(adam));
-
+  console.log("Request for digital output " + req.body);
+  res.status(200);
+  res.end();
 
 });
