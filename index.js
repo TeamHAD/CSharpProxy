@@ -1,4 +1,5 @@
 var ADAM_DO_COUNT = 6;
+var ADAM_DI_COUNT = 6;
 var ADAM_VALUE_MIN = 0;
 var ADAM_VALUE_MAX = 1;
 var adam = [];
@@ -8,7 +9,16 @@ for (var i = 0; i < ADAM_DO_COUNT; i++) {
       ID: i,
       VALUE: 0
     }
-  })
+  });
+}
+var dinputs = [];
+for (var i = 0; i < ADAM_DI_COUNT; i++) {
+  dinputs.push({
+    DI: {
+      ID: i,
+      VALUE: Math.round(Math.random())
+    }
+  });
 }
 
 var express = require('express'),
@@ -52,7 +62,10 @@ app.get('/digitaloutput/:id/value', function(req, res) {
   if (Math.abs(dout) < adam.length) {
     res.status(200);
     res.set('Content-Type', 'text/xml');
-    res.send(xml(adam[dout]));
+    res.write('<?xml version="1.0" ?> <ADAM-6250 status="OK">');
+    res.write(xml(adam[dout]));
+    res.write('</ADAM-6250>');
+    res.end();
   } else {
     res.status(501);
     res.end();
@@ -60,13 +73,29 @@ app.get('/digitaloutput/:id/value', function(req, res) {
 
 });
 
-app.get('/digitalinput/:id/:value', function(req, res) {
-  console.log("Request for digital input channel: " + req.params.id + " value: " + req.params.value);
-  console.log(adam);
-  var din = req.params.id, val = req.params.value;
-  if (Math.abs(din) < adam.length && val >= ADAM_VALUE_MIN && val <= ADAM_VALUE_MAX) {
+/*
+RESPONSE
+The content-type will be ‘text/xml’
+If result is OK, the content will look like below
+<?xml version="1.0" ?> <ADAM-6250 status=”OK”>
+<DI> <ID>0</ID>
+<VALUE>0</VALUE> </DI>
+</ADAM-6250>
+If result is failed , the content will look like below
+<?xml version="1.0" ?>
+<ADAM‐6250 status=”{error}”> </ADAM-6250>
+{error} : The error message.
+*/
+app.get('/digitalinput/:id/value', function(req, res) {
+  console.log("Request for digital input channel: " + req.params.id);
+  var din = req.params.id;
+  var device = dinputs[din];
+  if (Math.abs(din) < adam.length) {
     res.status(200);
-    res.send(xml(device));
+    res.write('<?xml version="1.0" ?> <ADAM-6250 status="OK">');
+    res.write(xml(device));
+    res.write('</ADAM-6250>');
+    res.end();
   } else {
     res.status(501);
     res.end();
@@ -76,8 +105,6 @@ app.get('/digitalinput/:id/:value', function(req, res) {
 
 /*
 REQUEST
-
-
 
 The content‐type will be ‘application/x‐www‐form‐urlencoded’. Examples:
 Use the following URI to set the DO value(s). http://10.0.0.1/digitaloutput/all/value
