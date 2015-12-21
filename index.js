@@ -56,13 +56,18 @@ app.get('/', function(req, res) {
 });
 
 app.get('/digitaloutput/:id/value', function(req, res) {
-  console.log("Request for digital output channel: " + req.params.id);
-  console.log(adam);
   var dout = req.params.id;
+  console.log("Request for digital output channel: " + req.params.id + " " + adam[dout]['DO']['VALUE']);
+  console.log(adam);
+
   if (Math.abs(dout) < adam.length) {
     res.status(200);
     res.set('Content-Type', 'text/xml');
-    res.write('<?xml version="1.0" ?> <ADAM-6250 status="OK">');
+    if (dout == 12) {
+      res.write('<?xml version="1.0" ?> <ADAM-6017 status="OK">');
+    } else {
+      res.write('<?xml version="1.0" ?> <ADAM-6250 status="OK">');
+    }
     res.write(xml(adam[dout]));
     res.write('</ADAM-6250>');
     res.end();
@@ -87,13 +92,33 @@ If result is failed , the content will look like below
 {error} : The error message.
 */
 app.get('/digitalinput/:id/value', function(req, res) {
-  console.log("Request for digital input channel: " + req.params.id);
   var din = req.params.id;
+  console.log("Request for digital input channel: " + din + " " + dinputs[din]['DI']['VALUE']);
+
+
+
   var device = dinputs[din];
   if (Math.abs(din) < adam.length) {
     res.status(200);
     res.write('<?xml version="1.0" ?> <ADAM-6250 status="OK">');
     res.write(xml(device));
+    res.write('</ADAM-6250>');
+    res.end();
+  } else {
+    res.status(501);
+    res.end();
+  }
+
+});
+
+app.get('/analoginput/:id/value', function(req, res) {
+  console.log("Request for analog input channel: " + req.params.id);
+  var din = req.params.id;
+  var device = dinputs[din];
+  if (Math.abs(din) < adam.length) {
+    res.status(200);
+    res.write('<?xml version="1.0" ?> <ADAM-6017 status="OK">');
+    res.write('<VALUE>7FFFF</VALUE>');
     res.write('</ADAM-6250>');
     res.end();
   } else {
